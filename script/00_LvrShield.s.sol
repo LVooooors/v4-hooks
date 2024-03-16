@@ -13,23 +13,24 @@ import {HookMiner} from "../test/utils/HookMiner.sol";
 
 contract LvrShieldScript is Script {
     address constant CREATE2_DEPLOYER = address(0x4e59b44847b379578588920cA78FbF26c0B4956C);
-    address constant GOERLI_POOLMANAGER = address(0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b);
+    // address constant GOERLI_POOLMANAGER = address(0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b);
+    address constant ARBITRUM_SEPOLIA_POOLMANAGER = address(0xE5dF461803a59292c6c03978c17857479c40bc46);
 
     function setUp() public {}
 
     function run() public {
         // hook contracts must have specific flags encoded in the address
         uint160 flags = uint160(
-            Hooks.BEFORE_SWAP_FLAG
+            Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG
         );
 
         // Mine a salt that will produce a hook address with the correct flags
         (address hookAddress, bytes32 salt) =
-            HookMiner.find(CREATE2_DEPLOYER, flags, type(LvrShield).creationCode, abi.encode(address(GOERLI_POOLMANAGER)));
+            HookMiner.find(CREATE2_DEPLOYER, flags, type(LvrShield).creationCode, abi.encode(address(ARBITRUM_SEPOLIA_POOLMANAGER)));
 
         // Deploy the hook using CREATE2
         vm.broadcast();
-        LvrShield lvrShield = new LvrShield{salt: salt}(IPoolManager(address(GOERLI_POOLMANAGER)));
+        LvrShield lvrShield = new LvrShield{salt: salt}(IPoolManager(address(ARBITRUM_SEPOLIA_POOLMANAGER)));
         require(address(lvrShield) == hookAddress, "LvrShieldScript: hook address mismatch");
     }
 }

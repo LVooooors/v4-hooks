@@ -14,12 +14,20 @@ contract CreatePoolScript is Script {
     using CurrencyLibrary for Currency;
 
     //addresses with contracts deployed
-    address constant GOERLI_POOLMANAGER = address(0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b); //pool manager deployed to GOERLI
-    address constant MUNI_ADDRESS = address(0xbD97BF168FA913607b996fab823F88610DCF7737); //mUNI deployed to GOERLI -- insert your own contract address here
-    address constant MUSDC_ADDRESS = address(0xa468864e673a807572598AB6208E49323484c6bF); //mUSDC deployed to GOERLI -- insert your own contract address here
-    address constant HOOK_ADDRESS = address(0x3CA2cD9f71104a6e1b67822454c725FcaeE35fF6); //address of the hook contract deployed to goerli -- you can use this hook address or deploy your own!
+    
+    // address constant GOERLI_POOLMANAGER = address(0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b); //pool manager deployed to GOERLI
+    address constant ARBITRUM_SEPOLIA_POOLMANAGER = address(0xE5dF461803a59292c6c03978c17857479c40bc46);
 
-    IPoolManager manager = IPoolManager(GOERLI_POOLMANAGER);
+    // address constant MUNI_ADDRESS = address(0xbD97BF168FA913607b996fab823F88610DCF7737); //mUNI deployed to GOERLI -- insert your own contract address here
+    address constant MUNI_ADDRESS = address(0xA47757c742f4177dE4eEA192380127F8B62455F5);
+
+    // address constant MUSDC_ADDRESS = address(0xa468864e673a807572598AB6208E49323484c6bF); //mUSDC deployed to GOERLI -- insert your own contract address here
+    address constant MUSDC_ADDRESS = address(0xFDA93151f6146f763D3A80Ddb4C5C7B268469465);
+
+    // address constant HOOK_ADDRESS = address(0x3CA2cD9f71104a6e1b67822454c725FcaeE35fF6); //address of the hook contract deployed to goerli -- you can use this hook address or deploy your own!
+    address constant HOOK_ADDRESS = address(0x3CA2cD9f71104a6e1b67822454c725FcaeE35fF6);
+
+    IPoolManager manager = IPoolManager(ARBITRUM_SEPOLIA_POOLMANAGER);
 
     function run() external {
         // sort the tokens!
