@@ -17,7 +17,7 @@ contract LvrShield is BaseHook {
     // a single hook contract should be able to service multiple pools
     // ---------------------------------------------------------------
 
-    mapping(PoolId => uint256 count) public beforeSwapCount;
+    mapping(PoolId poolId => mapping(uint blockNumber => uint256 poolBlockSwapCounter)) public blockSwapCounter;
 
     constructor(IPoolManager _poolManager) BaseHook(_poolManager) {}
 
@@ -30,7 +30,7 @@ contract LvrShield is BaseHook {
             beforeRemoveLiquidity: false,
             afterRemoveLiquidity: false,
             beforeSwap: true,
-            afterSwap: false,
+            afterSwap: true,
             beforeDonate: false,
             afterDonate: false
         });
@@ -45,12 +45,22 @@ contract LvrShield is BaseHook {
         override
         returns (bytes4)
     {
-        // TODO:
-        // - check if top of block for this pair
-        // - if yes, check if won auction - or revert
-
-        beforeSwapCount[key.toId()]++;
+        // Check if top of block for this pair
+        if (blockSwapCounter[key.toId()][block.number]==0) {
+            // If yes, check if it won the auction - or revert
+            // TODO
+            require(true, "This is a top of block swap but it wasn't the auction winner");
+        }
         return BaseHook.beforeSwap.selector;
+    }
+
+    function afterSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata, BalanceDelta, bytes calldata)
+        external
+        override
+        returns (bytes4)
+    {
+        blockSwapCounter[key.toId()][block.number]++;
+        return BaseHook.afterSwap.selector;
     }
 
 }
