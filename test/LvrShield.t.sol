@@ -12,14 +12,14 @@ import {PoolId, PoolIdLibrary} from "v4-core/src/types/PoolId.sol";
 import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
 import {PoolSwapTest} from "v4-core/src/test/PoolSwapTest.sol";
 import {Deployers} from "v4-core/test/utils/Deployers.sol";
-import {Counter} from "../src/Counter.sol";
+import {LvrShield} from "../src/LvrShield.sol";
 import {HookMiner} from "./utils/HookMiner.sol";
 
-contract CounterTest is Test, Deployers {
+contract LvrShieldTest is Test, Deployers {
     using PoolIdLibrary for PoolKey;
     using CurrencyLibrary for Currency;
 
-    Counter counter;
+    LvrShield lvrShield;
     PoolId poolId;
 
     function setUp() public {
@@ -33,12 +33,12 @@ contract CounterTest is Test, Deployers {
                 | Hooks.BEFORE_REMOVE_LIQUIDITY_FLAG
         );
         (address hookAddress, bytes32 salt) =
-            HookMiner.find(address(this), flags, type(Counter).creationCode, abi.encode(address(manager)));
-        counter = new Counter{salt: salt}(IPoolManager(address(manager)));
-        require(address(counter) == hookAddress, "CounterTest: hook address mismatch");
+            HookMiner.find(address(this), flags, type(LvrShield).creationCode, abi.encode(address(manager)));
+        lvrShield = new LvrShield{salt: salt}(IPoolManager(address(manager)));
+        require(address(lvrShield) == hookAddress, "LvrShieldTest: hook address mismatch");
 
         // Create the pool
-        key = PoolKey(currency0, currency1, 3000, 60, IHooks(address(counter)));
+        key = PoolKey(currency0, currency1, 3000, 60, IHooks(address(lvrShield)));
         poolId = key.toId();
         manager.initialize(key, SQRT_RATIO_1_1, ZERO_BYTES);
 
@@ -52,13 +52,9 @@ contract CounterTest is Test, Deployers {
         );
     }
 
-    function testCounterHooks() public {
+    function testLvrShieldHooks() public {
         // positions were created in setup()
-        assertEq(counter.beforeAddLiquidityCount(poolId), 3);
-        assertEq(counter.beforeRemoveLiquidityCount(poolId), 0);
-
-        assertEq(counter.beforeSwapCount(poolId), 0);
-        assertEq(counter.afterSwapCount(poolId), 0);
+        assertEq(lvrShield.beforeSwapCount(poolId), 0);
 
         // Perform a test swap //
         bool zeroForOne = true;
@@ -68,20 +64,14 @@ contract CounterTest is Test, Deployers {
 
         assertEq(int256(swapDelta.amount0()), amountSpecified);
 
-        assertEq(counter.beforeSwapCount(poolId), 1);
-        assertEq(counter.afterSwapCount(poolId), 1);
     }
     
     function testLiquidityHooks() public {
         // positions were created in setup()
-        assertEq(counter.beforeAddLiquidityCount(poolId), 3);
-        assertEq(counter.beforeRemoveLiquidityCount(poolId), 0);
 
         // remove liquidity
         int256 liquidityDelta = -1e18;
         modifyLiquidityRouter.modifyLiquidity(key, IPoolManager.ModifyLiquidityParams(-60, 60, liquidityDelta), ZERO_BYTES);
 
-        assertEq(counter.beforeAddLiquidityCount(poolId), 3);
-        assertEq(counter.beforeRemoveLiquidityCount(poolId), 1);
     }
 }

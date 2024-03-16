@@ -31,6 +31,6 @@ contract LvrShieldScript is Script {
         // Deploy the hook using CREATE2
         vm.broadcast();
         LvrShield lvrShield = new LvrShield{salt: salt}(IPoolManager(address(GOERLI_POOLMANAGER)));
-        require(address(LvrShield) == hookAddress, "LvrShieldScript: hook address mismatch");
+        require(address(lvrShield) == hookAddress, "LvrShieldScript: hook address mismatch");
     }
 }
