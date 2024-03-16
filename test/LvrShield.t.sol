@@ -29,8 +29,7 @@ contract LvrShieldTest is Test, Deployers {
 
         // Deploy the hook to an address with the correct flags
         uint160 flags = uint160(
-            Hooks.BEFORE_SWAP_FLAG | Hooks.AFTER_SWAP_FLAG | Hooks.BEFORE_ADD_LIQUIDITY_FLAG
-                | Hooks.BEFORE_REMOVE_LIQUIDITY_FLAG
+            Hooks.BEFORE_SWAP_FLAG
         );
         (address hookAddress, bytes32 salt) =
             HookMiner.find(address(this), flags, type(LvrShield).creationCode, abi.encode(address(manager)));
