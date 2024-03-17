@@ -13,7 +13,6 @@ import {HookMiner} from "../test/utils/HookMiner.sol";
 
 contract LvrShieldScript is Script {
     address constant CREATE2_DEPLOYER = address(0x4e59b44847b379578588920cA78FbF26c0B4956C);
-    // address constant GOERLI_POOLMANAGER = address(0x3A9D48AB9751398BbFa63ad67599Bb04e4BdF98b);
     address constant ARBITRUM_SEPOLIA_POOLMANAGER = address(0xE5dF461803a59292c6c03978c17857479c40bc46);
 
     function setUp() public {}
