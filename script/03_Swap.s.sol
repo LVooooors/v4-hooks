@@ -12,20 +12,20 @@ import {CurrencyLibrary, Currency} from "v4-core/src/types/Currency.sol";
 import {IHooks} from "v4-core/src/interfaces/IHooks.sol";
 
 contract SwapScript is Script {
-    // PoolSwapTest Contract address on Goerli
-    PoolSwapTest swapRouter = PoolSwapTest(0xF8AADC65Bf1Ec1645ef931317fD48ffa734a185c);
+    address constant POOL_MANAGER = address(0xE5dF461803a59292c6c03978c17857479c40bc46);
+    address constant TOKEN1_ADDRESS = address(0xA47757c742f4177dE4eEA192380127F8B62455F5);
+    address constant TOKEN2_ADDRESS = address(0xFDA93151f6146f763D3A80Ddb4C5C7B268469465);
+    address constant HOOK_ADDRESS = address(0x0301cF874CDB90ea311354eC6518aeF36F00C5FE);
 
-    address constant MUNI_ADDRESS = address(0xbD97BF168FA913607b996fab823F88610DCF7737); //-- insert your own contract address here -- mUNI deployed to GOERLI
-    address constant MUSDC_ADDRESS = address(0xa468864e673a807572598AB6208E49323484c6bF); //-- insert your own contract address here -- mUSDC deployed to GOERLI
-    address constant HOOK_ADDRESS = address(0x3CA2cD9f71104a6e1b67822454c725FcaeE35fF6); // address of the hook contract deployed to goerli -- you can use this hook address or deploy your own!
+    PoolSwapTest swapRouter = PoolSwapTest(0x5bA874E13D2Cf3161F89D1B1d1732D14226dBF16);
 
     // slippage tolerance to allow for unlimited price impact
     uint160 public constant MIN_PRICE_LIMIT = TickMath.MIN_SQRT_RATIO + 1;
     uint160 public constant MAX_PRICE_LIMIT = TickMath.MAX_SQRT_RATIO - 1;
 
     function run() external {
-        address token0 = uint160(MUSDC_ADDRESS) < uint160(MUNI_ADDRESS) ? MUSDC_ADDRESS : MUNI_ADDRESS;
-        address token1 = uint160(MUSDC_ADDRESS) < uint160(MUNI_ADDRESS) ? MUNI_ADDRESS : MUSDC_ADDRESS;
+        address token0 = uint160(TOKEN2_ADDRESS) < uint160(TOKEN1_ADDRESS) ? TOKEN2_ADDRESS : TOKEN1_ADDRESS;
+        address token1 = uint160(TOKEN2_ADDRESS) < uint160(TOKEN1_ADDRESS) ? TOKEN1_ADDRESS : TOKEN2_ADDRESS;
         uint24 swapFee = 4000;
         int24 tickSpacing = 10;
 
@@ -50,11 +50,11 @@ contract SwapScript is Script {
         bool zeroForOne = true;
         IPoolManager.SwapParams memory params = IPoolManager.SwapParams({
             zeroForOne: zeroForOne,
-            amountSpecified: 100e18,
+            amountSpecified: 3e18,
             sqrtPriceLimitX96: zeroForOne ? MIN_PRICE_LIMIT : MAX_PRICE_LIMIT // unlimited impact
         });
 
-        // in v4, users have the option to receieve native ERC20s or wrapped ERC1155 tokens
+        // in v4, users have the option to receive native ERC20s or wrapped ERC1155 tokens
         // here, we'll take the ERC20s
         PoolSwapTest.TestSettings memory testSettings =
             PoolSwapTest.TestSettings({withdrawTokens: true, settleUsingTransfer: true, currencyAlreadySent: false});
