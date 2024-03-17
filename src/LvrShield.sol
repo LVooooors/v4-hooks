@@ -42,6 +42,7 @@ contract LvrShield is BaseHook {
 
     function beforeSwap(address, PoolKey calldata key, IPoolManager.SwapParams calldata, bytes calldata)
         external
+        view
         override
         returns (bytes4)
     {

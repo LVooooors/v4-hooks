@@ -54,17 +54,21 @@ contract LvrShieldTest is Test, Deployers {
     function testLvrShieldHooks() public {
         // positions were created in setup()
         console.log(lvrShield.blockSwapCounter(poolId, block.number));
-
         assertEq(lvrShield.blockSwapCounter(poolId, block.number), 0);
 
-        // Perform a test swap //
+        // Perform a test swap 1 //
+
         bool zeroForOne = true;
         int256 amountSpecified = -1e18; // negative number indicates exact input swap!
         BalanceDelta swapDelta = swap(key, zeroForOne, amountSpecified, ZERO_BYTES);
-        // ------------------- //
 
         assertEq(int256(swapDelta.amount0()), amountSpecified);
+        assertEq(lvrShield.blockSwapCounter(poolId, block.number), 1);
 
+        // Perform a test swap 2 //
+
+        BalanceDelta swapDelta2 = swap(key, zeroForOne, amountSpecified, ZERO_BYTES);
+        assertEq(lvrShield.blockSwapCounter(poolId, block.number), 2);
     }
     
     function testLiquidityHooks() public {
